@@ -3,285 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-  <!-- SEO -->
   <title>MIPOS ToolBox — Internal Mini Tools Hub</title>
-  <meta name="description" content="MIPOS ToolBox is your one-stop hub for all MIPOS ShopTech internal mini-tools — Android utilities, network configuration tools, and more." />
-  <meta name="author" content="MIPOS ShopTech Sdn Bhd" />
-  <meta name="robots" content="index, follow" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="MIPOS ToolBox — Internal Tools Hub" />
-  <meta property="og:description" content="One hub for all MIPOS internal mini-tools. Download, launch, and explore tools built by MIPOS ShopTech." />
+  <meta name="description" content="MIPOS ToolBox — a curated hub of mini-tools built for MIPOS field engineers, technicians, and partners." />
+  <meta property="og:title" content="MIPOS ToolBox" />
+  <meta property="og:description" content="One hub for all MIPOS internal mini-tools." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://toolbox.mipos.me/" />
   <meta property="og:site_name" content="MIPOS ToolBox" />
   <link rel="canonical" href="https://toolbox.mipos.me/" />
-
-  <!-- Theme -->
   <meta name="theme-color" content="#1B2A4A" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MIPOS ToolBox" />
-
-  <!-- Favicon inline SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23FF6600'/><text y='23' x='5' font-size='20' font-weight='900' fill='white' font-family='Arial'>M</text></svg>" />
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
-  <!-- Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       NAVBAR
-       ═══════════════════════════════════════════ -->
-  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
-    <div class="nav-inner">
-
-      <a href="/" class="nav-logo" aria-label="MIPOS ToolBox home">
-        <div class="nav-logo-icon" aria-hidden="true">M</div>
-        <div>
-          <div class="nav-logo-text">MIPOS <span>ToolBox</span></div>
-          <div class="nav-logo-sub">by ShopTech</div>
-        </div>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="MIPOS ToolBox home">
+        <div class="logo-icon" aria-hidden="true">M</div>
+        <div class="logo-text">MIPOS <span>ToolBox</span></div>
       </a>
-
-      <div class="nav-links" id="navLinks">
+      <nav class="header-nav" aria-label="Main navigation">
         <a href="#tools">Tools</a>
         <a href="#coming-soon">Roadmap</a>
         <a href="https://mipos.me" target="_blank" rel="noopener">MIPOS.me</a>
-        <a href="https://github.com/kelvinyong" target="_blank" rel="noopener" class="nav-cta">GitHub →</a>
-      </div>
-
-      <button
-        class="nav-hamburger"
-        id="hamburger"
-        aria-label="Toggle navigation"
-        aria-expanded="false"
-        aria-controls="navLinks"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-    </div>
-  </nav>
-
-  <!-- ═══════════════════════════════════════════
-       HERO
-       ═══════════════════════════════════════════ -->
-  <header class="hero" role="banner">
-    <div class="hero-inner">
-
-      <div class="hero-badge" role="status">
-        <span class="dot" aria-hidden="true"></span>
-        🧰 Internal Tools Hub · MIPOS ShopTech
-      </div>
-
-      <h1>Your MIPOS <span>ToolBox</span></h1>
-
-      <p class="hero-sub">
-        A curated collection of mini-tools built for MIPOS field engineers,
-        technicians, and partners. Download, configure, deploy — faster.
-      </p>
-
-      <div class="hero-stats" role="list" aria-label="Tool statistics">
-
-        <div class="hero-stat" role="listitem">
-          <div class="hero-stat-num"><span id="statTotal">1</span></div>
-          <div class="hero-stat-label">Tools Available</div>
-        </div>
-
-        <div class="hero-divider" aria-hidden="true"></div>
-
-        <div class="hero-stat" role="listitem">
-          <div class="hero-stat-num">100<span>%</span></div>
-          <div class="hero-stat-label">Free to Use</div>
-        </div>
-
-        <div class="hero-divider" aria-hidden="true"></div>
-
-        <div class="hero-stat" role="listitem">
-          <div class="hero-stat-num"><span>MY</span></div>
-          <div class="hero-stat-label">Malaysia-Built</div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Wave break -->
-    <div class="hero-wave" aria-hidden="true">
-      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#F9FAFB"/>
-      </svg>
+      </nav>
     </div>
   </header>
 
-  <!-- ═══════════════════════════════════════════
-       MAIN — TOOLS HUB
-       ═══════════════════════════════════════════ -->
+  <!-- HERO — compact -->
+  <section class="hero" aria-label="MIPOS ToolBox hero">
+    <div class="hero-badge">
+      <span class="dot" aria-hidden="true"></span>
+      🧰 Internal Tools Hub · MIPOS ShopTech
+    </div>
+    <h1>Your MIPOS <span>ToolBox</span></h1>
+    <p class="hero-sub">Mini-tools for field engineers, technicians &amp; partners. Download and deploy, faster.</p>
+    <div class="hero-wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,18 C360,36 1080,0 1440,18 L1440,36 L0,36 Z" fill="#F4F6F9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- MAIN -->
   <main class="main" id="tools">
 
-    <!-- Search & Filter Toolbar -->
+    <!-- Toolbar -->
     <div class="toolbar" role="search">
-
       <div class="search-wrap">
         <span class="search-icon" aria-hidden="true">🔍</span>
         <label for="searchInput" class="sr-only">Search tools</label>
         <input
-          type="search"
-          id="searchInput"
-          class="search-input"
-          placeholder="Search tools, features, platforms…"
-          autocomplete="off"
-          spellcheck="false"
+          type="search" id="searchInput" class="search-input"
+          placeholder="Search tools…" autocomplete="off" spellcheck="false"
           aria-label="Search tools"
         />
       </div>
-
-      <div class="filter-chips" id="categoryChips" role="group" aria-label="Filter by category">
-        <!-- Rendered by app.js -->
-      </div>
-
+      <div class="chips" id="categoryChips" role="group" aria-label="Filter by category"></div>
     </div>
 
-    <!-- Section Header -->
-    <div class="section-header">
+    <!-- Section row -->
+    <div class="section-row">
       <h2 class="section-title">Available <span>Tools</span></h2>
-      <span class="tool-count" id="toolCount" aria-live="polite">— tools</span>
+      <span class="tool-count" id="toolCount" aria-live="polite"></span>
     </div>
 
-    <!-- Tools Grid -->
-    <div
-      class="tools-grid"
-      id="toolsGrid"
-      role="list"
-      aria-label="MIPOS mini tools"
-    >
-      <!-- Rendered by app.js -->
-    </div>
+    <!-- Grid -->
+    <div class="tools-grid" id="toolsGrid" role="list" aria-label="MIPOS mini tools"></div>
 
-    <!-- Empty State -->
+    <!-- Empty state -->
     <div class="empty-state" id="emptyState" role="alert" aria-live="polite">
-      <div class="empty-emoji" aria-hidden="true">🔭</div>
+      <div class="empty-emoji">🔭</div>
       <div class="empty-title">No tools found</div>
-      <div class="empty-sub">Try a different search term or category filter.</div>
+      <div class="empty-sub">Try a different search or filter.</div>
     </div>
 
-    <!-- ─── Coming Soon Section ─── -->
-    <section class="coming-soon-section" id="coming-soon" aria-labelledby="coming-soon-title">
-      <div class="coming-soon-badge" aria-label="Coming soon">🚀 On the Roadmap</div>
-      <h2 class="coming-soon-title" id="coming-soon-title">
-        More Tools <span>Coming Soon</span>
-      </h2>
-      <p class="coming-soon-sub">
-        We're continuously building internal tools to speed up MIPOS deployments.
-        Got an idea? Reach out to the ShopTech team.
-      </p>
-
-      <div class="coming-soon-cards" role="list" aria-label="Upcoming tools">
-        <div class="coming-soon-card" role="listitem">
-          <span class="coming-soon-card-icon" aria-hidden="true">📦</span>
-          Inventory Scanner
-        </div>
-        <div class="coming-soon-card" role="listitem">
-          <span class="coming-soon-card-icon" aria-hidden="true">📡</span>
-          Network Diagnostics
-        </div>
-        <div class="coming-soon-card" role="listitem">
-          <span class="coming-soon-card-icon" aria-hidden="true">🖨️</span>
-          Printer Self-Test
-        </div>
-        <div class="coming-soon-card" role="listitem">
-          <span class="coming-soon-card-icon" aria-hidden="true">🔑</span>
-          License Manager
-        </div>
-        <div class="coming-soon-card" role="listitem">
-          <span class="coming-soon-card-icon" aria-hidden="true">📋</span>
-          Deployment Checklist
-        </div>
+    <!-- Coming Soon -->
+    <div class="coming-strip" id="coming-soon">
+      <div class="coming-left">
+        <div class="coming-badge">🚀 Roadmap</div>
+        <div class="coming-title">More Tools <span>Coming Soon</span></div>
+        <div class="coming-sub">Continuously building tools to speed up MIPOS deployments.</div>
       </div>
-    </section>
+      <div class="coming-pills">
+        <div class="coming-pill">📦 Inventory Scanner</div>
+        <div class="coming-pill">📡 Network Diagnostics</div>
+        <div class="coming-pill">🔑 License Manager</div>
+        <div class="coming-pill">📋 Deploy Checklist</div>
+      </div>
+    </div>
 
   </main>
 
-  <!-- ═══════════════════════════════════════════
-       FOOTER
-       ═══════════════════════════════════════════ -->
-  <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer">
     <div class="footer-inner">
-
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-logo" aria-label="MIPOS ShopTech">
-            <div class="footer-logo-icon" aria-hidden="true">M</div>
-            <div class="footer-logo-text">MIPOS <span>ShopTech</span></div>
-          </div>
-          <p class="footer-tagline">
-            Malaysia's Premier POS Partner. Building tools that power
-            F&amp;B and retail businesses across Southeast Asia.
-          </p>
-        </div>
-
-        <div class="footer-links-group">
-          <h4>Tools</h4>
-          <ul>
-            <li><a href="#tools">All Tools</a></li>
-            <li><a href="#tools" data-filter="android">Android</a></li>
-            <li><a href="#tools" data-filter="network">Network</a></li>
-            <li><a href="#coming-soon">Roadmap</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-group">
-          <h4>MIPOS</h4>
-          <ul>
-            <li><a href="https://mipos.me" target="_blank" rel="noopener">Main Website</a></li>
-            <li><a href="https://github.com/kelvinyong" target="_blank" rel="noopener">GitHub</a></li>
-            <li><a href="mailto:hello@mipos.me">Contact Us</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links-group">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="https://github.com/kelvinyong/andriod-change-ip-tools/blob/main/README.md" target="_blank" rel="noopener">Printer IP Config Docs</a></li>
-            <li><a href="https://github.com/kelvinyong/andriod-change-ip-tools/releases" target="_blank" rel="noopener">Download Latest APK</a></li>
-          </ul>
-        </div>
+      <p class="footer-copy">&copy; <span id="year"></span> <span>MIPOS ShopTech Sdn Bhd</span></p>
+      <div class="footer-links">
+        <a href="https://mipos.me" target="_blank" rel="noopener">MIPOS.me</a>
+        <a href="https://github.com/kelvinyong-0510/toolbox" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:hello@mipos.me">Contact</a>
+        <span class="cf-badge">☁ Cloudflare Pages</span>
       </div>
-
-      <div class="footer-bottom">
-        <p class="footer-copy">
-          &copy; <span id="year"></span> <span>MIPOS ShopTech Sdn Bhd</span>. All rights reserved.
-        </p>
-        <div class="footer-built">
-          <span>Deployed on</span>
-          <span class="footer-cf-badge">☁ Cloudflare Pages</span>
-        </div>
-      </div>
-
     </div>
   </footer>
 
-  <!-- Screen-reader only helper class -->
-  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}</style>
-
-  <!-- App Script -->
   <script src="app.js"></script>
-
-  <!-- Footer year -->
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

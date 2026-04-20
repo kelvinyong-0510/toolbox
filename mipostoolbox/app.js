@@ -11,7 +11,7 @@ const TOOLS = [
   {
     id: 'printer-ip-config',
     name: 'Printer IP Config',
-    version: 'v1.0',
+    version: 'v1.15',
     icon: '🖨️',
     iconBg: 'linear-gradient(135deg, #1B2A4A, #2a3f6e)',
     category: 'android',
@@ -22,11 +22,10 @@ const TOOLS = [
     features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
     platform: 'android',
     downloadLabel: '⬇ Download APK',
-    downloadUrl:
-      'https://github.com/kelvinyong/andriod-change-ip-tools/releases/latest',
+    downloadUrl: '/downloads/MIPOS-PrinterIPConfig-v1.15.apk',
     docsUrl:
-      'https://github.com/kelvinyong/andriod-change-ip-tools/blob/main/README.md',
-    docsLabel: 'View Docs',
+      'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md',
+    docsLabel: 'Docs',
   },
   // ── TEMPLATE — duplicate & fill to add more tools ──
   // {
@@ -38,13 +37,12 @@ const TOOLS = [
   //   category: 'utilities',   // android | network | utilities | web
   //   categoryLabel: 'Utilities',
   //   isNew: false,
-  //   description: 'Short description of what this tool does.',
+  //   description: 'Short description.',
   //   features: ['Feature 1', 'Feature 2'],
-  //   platform: 'web',
   //   downloadLabel: '→ Launch Tool',
   //   downloadUrl: 'https://your-tool-url.com',
   //   docsUrl: '#',
-  //   docsLabel: 'View Docs',
+  //   docsLabel: 'Docs',
   // },
 ];
 
@@ -155,38 +153,38 @@ function renderTools() {
 
 function renderCard(tool, index) {
   const newBadge = tool.isNew
-    ? `<span class="badge-new">✦ New</span>`
+    ? `<span class="badge-new">New</span>`
     : '';
 
   const features = tool.features
-    .map((f) => `<span class="tool-feature-tag">${escapeHTML(f)}</span>`)
+    .map((f) => `<span class="tag">${escapeHTML(f)}</span>`)
     .join('');
 
   return `
-    <article class="tool-card card-accent" id="tool-${escapeHTML(tool.id)}" style="animation-delay:${index * 0.07}s;">
-      <div class="tool-card-top">
+    <article class="tool-card" id="tool-${escapeHTML(tool.id)}">
+      <div class="card-top">
         <div class="tool-icon" style="background:${tool.iconBg};" aria-hidden="true">
           ${tool.icon}
         </div>
         <div class="tool-meta">
           <div class="tool-name" title="${escapeHTML(tool.name)}">${escapeHTML(tool.name)}</div>
           <div class="tool-badges">
-            <span class="badge-version">${escapeHTML(tool.version)}</span>
+            <span class="badge-v">${escapeHTML(tool.version)}</span>
             <span class="badge-cat">${escapeHTML(tool.categoryLabel)}</span>
             ${newBadge}
           </div>
         </div>
       </div>
 
-      <div class="tool-card-body">
+      <div class="card-body">
         <p class="tool-desc">${escapeHTML(tool.description)}</p>
-        <div class="tool-features">${features}</div>
+        <div class="tool-tags">${features}</div>
       </div>
 
-      <div class="tool-card-footer">
+      <div class="card-footer">
         <a
           href="${escapeHTML(tool.downloadUrl)}"
-          class="btn-download"
+          class="btn-dl"
           id="btn-download-${escapeHTML(tool.id)}"
           target="_blank"
           rel="noopener noreferrer"
