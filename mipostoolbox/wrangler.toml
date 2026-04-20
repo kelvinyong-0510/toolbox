@@ -1,0 +1,10 @@
+name = "mipostoolbox"
+compatibility_date = "2024-01-01"
+
+# Cloudflare Pages — static site, no build step needed
+# The root of the project IS the output directory.
+pages_build_output_dir = "."
+
+# Custom domain: toolbox.mipos.me
+# To activate: Cloudflare Pages → mipostoolbox → Custom Domains → Add "toolbox.mipos.me"
+# (Requires mipos.me to be on Cloudflare DNS — just point the CNAME automatically)

@@ -1,0 +1,43 @@
+# MIPOS ToolBox — GitHub Actions Deployment to Cloudflare Pages
+# Triggers on every push to the `main` branch.
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN  — Create at dash.cloudflare.com > My Profile > API Tokens
+#                           Use the "Edit Cloudflare Pages" template permission
+#   CLOUDFLARE_ACCOUNT_ID — Found on the right sidebar of your Cloudflare dashboard
+
+name: Deploy MIPOS ToolBox to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mipostoolbox/**'
+
+  # Allow manual trigger from the GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: mipostoolbox
+          directory: mipostoolbox
+          # Optional: set a custom branch name for preview deployments
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'

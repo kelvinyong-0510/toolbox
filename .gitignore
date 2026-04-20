@@ -1,0 +1,33 @@
+# ── Android / Gradle ──────────────────────────
+.gradle/
+.kotlin/
+build/
+*.apk
+*.aab
+local.properties
+*.exe
+
+# ── Node / npm ────────────────────────────────
+node_modules/
+.next/
+dist/
+.env
+.env.local
+
+# ── macOS ─────────────────────────────────────
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# ── IDE / editors ─────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# ── Cloudflare / Wrangler ─────────────────────
+.wrangler/
+
+# ── Logs ──────────────────────────────────────
+*.log
+npm-debug.log*
