@@ -11,7 +11,7 @@ const TOOLS = [
   {
     id: 'printer-ip-config',
     name: 'Printer IP Config',
-    version: 'v1.15 (Latest)',
+    version: 'v1.0.0',
     icon: '🖨️',
     iconBg: 'linear-gradient(135deg, #1B2A4A, #2a3f6e)',
     category: 'android',
@@ -22,7 +22,7 @@ const TOOLS = [
     features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
     platform: 'android',
     downloadLabel: '⬇ Download APK',
-    downloadUrl: '/downloads/MIPOS-PrinterIPConfig-latest.apk',
+    downloadUrl: '/downloads/mipos-printer-ip-config-v1.0.0.apk',
     docsUrl:
       'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md',
     docsLabel: 'Docs',
