@@ -133,7 +133,7 @@ async function handleTutorial(request, env) {
 // ── CHANGELOG ─────────────────────────────────────────────
 async function handleChangelog(request, env) {
   if (request.method === 'GET') {
-    const rows = await env.mipostoolbox_db.prepare('SELECT id, action, target_table, target_id, timestamp FROM changelog ORDER BY id DESC LIMIT 100').all();
+    const rows = await env.mipostoolbox_db.prepare('SELECT id, action, target_table, target_id, timestamp FROM changelog ORDER BY id DESC LIMIT 5').all();
     return json(rows.results);
   }
   return err('Method not allowed', 405);
