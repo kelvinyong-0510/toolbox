@@ -8,3 +8,8 @@ pages_build_output_dir = "."
 # Custom domain: toolbox.mipos.me
 # To activate: Cloudflare Pages → mipostoolbox → Custom Domains → Add "toolbox.mipos.me"
 # (Requires mipos.me to be on Cloudflare DNS — just point the CNAME automatically)
+
+[[d1_databases]]
+binding = "mipostoolbox_db"
+database_name = "mipostoolbox_db"
+database_id = "6a971d5e-4400-405b-a45b-e2e203244671"
