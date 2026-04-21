@@ -57,13 +57,6 @@
     </div>
 
     <div class="panel">
-      <div class="form-group" style="max-width:300px">
-        <label>Admin PIN Code (Required to Save/Delete)</label>
-        <input type="password" id="adminPin" placeholder="Enter PIN">
-      </div>
-    </div>
-
-    <div class="panel">
       <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 20px">
         <div class="form-group" style="margin:0; width: 300px">
           <label>Select Database</label>
@@ -72,7 +65,10 @@
             <option value="tutorials">Tutorials</option>
           </select>
         </div>
-        <button class="btn" onclick="openCreateModal()">+ Add New Row</button>
+        <div style="display:flex; gap: 10px">
+          <button class="btn btn-secondary" onclick="openChangelogModal()">📜 View Changelog</button>
+          <button class="btn" onclick="openCreateModal()">+ Add New Row</button>
+        </div>
       </div>
 
       <table id="dataTable">
@@ -141,6 +137,34 @@
       </div>
     </div>
   </div>
+
+  <!-- Changelog Modal -->
+  <div class="modal" id="modalChangelog">
+    <div class="modal-content" style="max-width: 800px">
+      <h2>Database Audit Changelog</h2>
+      <table id="changelogTable">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Table</th>
+            <th>ID</th>
+            <th>Operation</th>
+          </tr>
+        </thead>
+        <tbody id="changelogBody">
+        </tbody>
+      </table>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .revert-btn { background: #b18428; padding: 4px 8px; font-size: 11px; margin-left: 5px;}
+    .revert-btn:hover { background: #d29d33;}
+  </style>
 
   <script>
     let currentData = [];
@@ -226,16 +250,8 @@
       }
     }
 
-    // Auth Helper
-    function getPin() {
-      const pin = document.getElementById('adminPin').value;
-      if (!pin) alert("Please enter the Admin PIN!");
-      return pin;
-    }
-
     // Save Handlers
     async function saveLed() {
-      const pin = getPin(); if(!pin) return;
       const id = document.getElementById('ledId').value;
       
       let detailsJson;
@@ -252,11 +268,10 @@
 
       if (id) payload.id = parseInt(id);
 
-      await sendRequest('/api/led-data.json', id ? 'PUT' : 'POST', payload, pin);
+      await sendRequest('/api/led-data.json', id ? 'PUT' : 'POST', payload);
     }
 
     async function saveTutorial() {
-      const pin = getPin(); if(!pin) return;
       const id = document.getElementById('tutId').value;
       
       let vJson, fJson;
@@ -277,35 +292,77 @@
 
       if (id) payload.id = parseInt(id);
 
-      await sendRequest('/api/tutorial-data.json', id ? 'PUT' : 'POST', payload, pin);
+      await sendRequest('/api/tutorial-data.json', id ? 'PUT' : 'POST', payload);
     }
 
     // Delete Handler
     async function deleteItem(id) {
       if(!confirm("Are you sure you want to permanently delete this row?")) return;
-      const pin = getPin(); if(!pin) return;
+      
       const type = document.getElementById('dbSelect').value;
       const url = type === 'led' ? '/api/led-data.json' : '/api/tutorial-data.json';
       
-      await sendRequest(url, 'DELETE', { id }, pin);
+      await sendRequest(url, 'DELETE', { id });
+    }
+
+    // Changelog Handlers
+    async function openChangelogModal() {
+        document.getElementById('modalChangelog').classList.add('active');
+        const tbody = document.getElementById('changelogBody');
+        tbody.innerHTML = '<tr><td colspan="5">Loading logs...</td></tr>';
+        
+        try {
+            const res = await fetch('/api/changelog.json');
+            const logs = await res.json();
+            
+            tbody.innerHTML = '';
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+                const revertBtn = (log.action === 'CREATE' || log.action === 'UPDATE' || log.action === 'DELETE') 
+                    ? `<button class="btn revert-btn" onclick="revertLog(${log.id})">⏪ Revert</button>` 
+                    : '';
+                
+                tr.innerHTML = `
+                    <td style="font-size:11px">${log.timestamp}</td>
+                    <td><strong>${log.action}</strong></td>
+                    <td>${log.target_table}</td>
+                    <td>${log.target_id}</td>
+                    <td>${revertBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch(e) {
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red">Error: ${e.message}</td></tr>`;
+        }
+    }
+
+    async function revertLog(logId) {
+        if(!confirm("Are you sure you want to instantly revert the database to undo this specific action?")) return;
+        try {
+            const res = await fetch('/api/changelog-revert.json', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ logId })
+            });
+            if (res.ok) {
+                closeModals();
+                loadData();
+            } else alert('Revert Error: ' + await res.text());
+        } catch (e) {
+            alert('Revert Network Error: ' + e.message);
+        }
     }
 
     // API Comms
-    async function sendRequest(url, method, payload, pin) {
+    async function sendRequest(url, method, payload) {
       try {
         const res = await fetch(url, {
           method,
           headers: {
-            'Content-Type': 'application/json',
-            'X-Admin-Pin': pin
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
         });
-        
-        if (res.status === 401) {
-          alert('Unauthorized: Incorrect PIN!');
-          return;
-        }
         
         if (res.ok) {
           closeModals();
