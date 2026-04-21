@@ -11,7 +11,7 @@ const TOOLS = [
   {
     id: 'printer-ip-config',
     name: 'Printer IP Config',
-    version: 'v1.20',
+    version: 'v1.19',
     icon: '🖨️',
     iconBg: 'linear-gradient(135deg, #1B2A4A, #2a3f6e)',
     category: 'android',
@@ -22,12 +22,11 @@ const TOOLS = [
     features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
     platform: 'android',
     downloadLabel: '⬇ Download APK',
-    downloadUrl: '/downloads/mipos-printer-ip-config-v1.20.apk',
+    downloadUrl: '/downloads/mipos-printer-ip-config-v1.19.apk',
     updates: [
-      { version: 'v1.20', label: 'Latest', downloadUrl: '/downloads/mipos-printer-ip-config-v1.20.apk' },
-      { version: 'v1.19', label: 'Previous', downloadUrl: '/downloads/mipos-printer-ip-config-v1.19.apk' },
-      { version: 'v1.18', label: 'Stable', downloadUrl: '/downloads/mipos-printer-ip-config-v1.18.apk' },
-      { version: 'v1.17', label: 'Legacy', downloadUrl: '/downloads/mipos-printer-ip-config-v1.17.apk' },
+      { version: 'v1.19', label: 'Latest', downloadUrl: '/downloads/mipos-printer-ip-config-v1.19.apk' },
+      { version: 'v1.18', label: 'Previous', downloadUrl: '/downloads/mipos-printer-ip-config-v1.18.apk' },
+      { version: 'v1.17', label: 'Stable', downloadUrl: '/downloads/mipos-printer-ip-config-v1.17.apk' },
       { version: 'v1.15', label: 'Legacy', downloadUrl: '/downloads/MIPOS-PrinterIPConfig-v1.15.apk' }
     ],
     docsUrl:
