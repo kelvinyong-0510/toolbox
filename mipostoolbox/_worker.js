@@ -40,7 +40,7 @@ async function handleLed(request, env) {
     if (!sku) return err('Missing sku');
     const result = await db.prepare('INSERT INTO led_boards (sku, details_json) VALUES (?, ?)').bind(sku, details_json || '[]').run();
     const newId = result.meta?.last_row_id;
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('CREATE', 'led_boards', newId, JSON.stringify({ sku, details_json })).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('CREATE', 'led_boards', newId, JSON.stringify({ sku, details_json })).run();
     return json({ success: true, id: newId });
   }
 
@@ -49,7 +49,7 @@ async function handleLed(request, env) {
     if (!id) return err('Missing id');
     const old = await db.prepare('SELECT * FROM led_boards WHERE id = ?').bind(id).first();
     await db.prepare('UPDATE led_boards SET sku = ?, details_json = ? WHERE id = ?').bind(sku, details_json, id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('UPDATE', 'led_boards', id, JSON.stringify(old)).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('UPDATE', 'led_boards', id, JSON.stringify(old)).run();
     return json({ success: true });
   }
 
@@ -58,7 +58,7 @@ async function handleLed(request, env) {
     if (!id) return err('Missing id');
     const old = await db.prepare('SELECT * FROM led_boards WHERE id = ?').bind(id).first();
     await db.prepare('DELETE FROM led_boards WHERE id = ?').bind(id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('DELETE', 'led_boards', id, JSON.stringify(old)).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'led_boards', id, JSON.stringify(old)).run();
     return json({ success: true });
   }
 
@@ -91,7 +91,7 @@ async function handleTutorial(request, env) {
     if (!sku) return err('Missing sku');
     const result = await db.prepare('INSERT INTO tutorials (sku, playlist_name, playlist_link, video_links_json, file_links_json) VALUES (?, ?, ?, ?, ?)').bind(sku, playlist_name || '', playlist_link || '', video_links_json || '[]', file_links_json || '[]').run();
     const newId = result.meta?.last_row_id;
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('CREATE', 'tutorials', newId, JSON.stringify(body)).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('CREATE', 'tutorials', newId, JSON.stringify(body)).run();
     return json({ success: true, id: newId });
   }
 
@@ -100,7 +100,7 @@ async function handleTutorial(request, env) {
     if (!id) return err('Missing id');
     const old = await db.prepare('SELECT * FROM tutorials WHERE id = ?').bind(id).first();
     await db.prepare('UPDATE tutorials SET sku = ?, playlist_name = ?, playlist_link = ?, video_links_json = ?, file_links_json = ? WHERE id = ?').bind(sku, playlist_name || '', playlist_link || '', video_links_json, file_links_json, id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('UPDATE', 'tutorials', id, JSON.stringify(old)).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('UPDATE', 'tutorials', id, JSON.stringify(old)).run();
     return json({ success: true });
   }
 
@@ -109,7 +109,7 @@ async function handleTutorial(request, env) {
     if (!id) return err('Missing id');
     const old = await db.prepare('SELECT * FROM tutorials WHERE id = ?').bind(id).first();
     await db.prepare('DELETE FROM tutorials WHERE id = ?').bind(id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('DELETE', 'tutorials', id, JSON.stringify(old)).run();
+    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'tutorials', id, JSON.stringify(old)).run();
     return json({ success: true });
   }
 
@@ -135,7 +135,7 @@ async function handleChangelogRevert(request, env) {
   const log = await db.prepare('SELECT * FROM changelog WHERE id = ?').bind(logId).first();
   if (!log) return err('Log entry not found', 404);
 
-  const snap = JSON.parse(log.snapshot || '{}');
+  const snap = JSON.parse(log.old_data || '{}');
   const table = log.target_table;
   const id = log.target_id;
 
@@ -157,7 +157,7 @@ async function handleChangelogRevert(request, env) {
     await db.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
   }
 
-  await db.prepare('INSERT INTO changelog (action, target_table, target_id, snapshot) VALUES (?, ?, ?, ?)').bind('REVERT', table, id, JSON.stringify({ reverted_log_id: logId })).run();
+  await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('REVERT', table, id, JSON.stringify({ reverted_log_id: logId })).run();
   return json({ success: true });
 }
 
