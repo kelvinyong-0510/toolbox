@@ -37,7 +37,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: mipostoolbox
-          directory: mipostoolbox
-          # Optional: set a custom branch name for preview deployments
+          directory: .
+          workingDirectory: mipostoolbox
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
