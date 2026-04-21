@@ -251,6 +251,11 @@
     .modal-scroll-area::-webkit-scrollbar { width: 6px; }
     .modal-scroll-area::-webkit-scrollbar-thumb { background: var(--grey-border); border-radius: 4px; }
 
+    /* Checkbox & Batch */
+    .row-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: var(--orange); }
+    #batchDeleteBtn { display: none; background: var(--danger-bg); color: var(--danger); box-shadow: none; }
+    #batchDeleteBtn:hover { background: var(--danger); color: white; }
+
     /* Modal Overskirt */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(15,26,48,0.55); backdrop-filter: blur(4px);
@@ -291,7 +296,8 @@
           </div>
           <input type="hidden" id="dbSelect" value="led">
         </div>
-        <div style="display:flex; gap: 12px">
+        <div style="display:flex; gap: 12px; align-items: center;">
+          <button class="btn" id="batchDeleteBtn" onclick="batchDelete()">🗑️ Delete Selected</button>
           <button class="btn btn-ghost" onclick="openChangelogModal()">📜 View Changelog</button>
           <button class="btn" onclick="openCreateModal()">+ Add New Row</button>
         </div>
@@ -303,6 +309,7 @@
         <table id="dataTable">
           <thead>
             <tr>
+              <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllCheckbox" class="row-checkbox" onchange="toggleSelectAll(this)"></th>
               <th style="width:60px">ID</th>
               <th>SKU</th>
               <th style="width: 150px">Actions</th>
@@ -474,8 +481,11 @@
       const tbody = document.getElementById('tableBody');
       const errBox = document.getElementById('error-box');
       errBox.style.display = 'none';
+      if (document.getElementById('selectAllCheckbox')) document.getElementById('selectAllCheckbox').checked = false;
+      if (document.getElementById('batchDeleteBtn')) document.getElementById('batchDeleteBtn').style.display = 'none';
+      
       if (currentData.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px;">Loading database cluster...</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 30px;">Loading database cluster...</td></tr>';
       }
       
       try {
@@ -494,12 +504,13 @@
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
       if(currentData.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px; color: var(--grey)">No records found.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 30px; color: var(--grey)">No records found.</td></tr>';
           return;
       }
       currentData.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td style="text-align: center;"><input type="checkbox" class="row-checkbox item-checkbox" value="${item.id}" onchange="updateBatchSelect()"></td>
           <td style="font-weight: 600; color: var(--grey)">#${item.id}</td>
           <td style="font-weight: 500">${item.SKU}</td>
           <td>
@@ -641,6 +652,36 @@
           const type = document.getElementById('dbSelect').value;
           const url = type === 'led' ? '/api/led-data.json' : '/api/tutorial-data.json';
           await sendRequest(url, 'DELETE', { id });
+          closeModals();
+      });
+    }
+
+    // Batch Select Handlers
+    function toggleSelectAll(masterCb) {
+      document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = masterCb.checked);
+      updateBatchSelect();
+    }
+    
+    function updateBatchSelect() {
+      const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+      const btn = document.getElementById('batchDeleteBtn');
+      if (checkedBoxes.length > 0) {
+        btn.style.display = 'inline-flex';
+        btn.innerText = `🗑️ Delete Selected (${checkedBoxes.length})`;
+      } else {
+        btn.style.display = 'none';
+        document.getElementById('selectAllCheckbox').checked = false;
+      }
+    }
+    
+    function batchDelete() {
+      const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+      const ids = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+      if (!ids.length) return;
+      openConfirm("Delete Multiple Rows?", `Are you sure you want to permanently delete ${ids.length} rows? This cannot be easily undone.`, async () => {
+          const type = document.getElementById('dbSelect').value;
+          const url = type === 'led' ? '/api/led-data.json' : '/api/tutorial-data.json';
+          await sendRequest(url, 'DELETE', { ids });
           closeModals();
       });
     }

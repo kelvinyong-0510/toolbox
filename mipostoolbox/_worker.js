@@ -54,11 +54,18 @@ async function handleLed(request, env) {
   }
 
   if (method === 'DELETE') {
-    const { id } = body;
-    if (!id) return err('Missing id');
-    const old = await db.prepare('SELECT * FROM led_boards WHERE id = ?').bind(id).first();
-    await db.prepare('DELETE FROM led_boards WHERE id = ?').bind(id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'led_boards', id, JSON.stringify(old)).run();
+    const ids = Array.isArray(body.ids) ? body.ids : (body.id ? [body.id] : []);
+    if (!ids.length) return err('Missing ids');
+
+    const stmts = [];
+    for (const uid of ids) {
+      const old = await db.prepare('SELECT * FROM led_boards WHERE id = ?').bind(uid).first();
+      if (old) {
+        stmts.push(db.prepare('DELETE FROM led_boards WHERE id = ?').bind(uid));
+        stmts.push(db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'led_boards', uid, JSON.stringify(old)));
+      }
+    }
+    if (stmts.length > 0) await db.batch(stmts);
     return json({ success: true });
   }
 
@@ -105,11 +112,18 @@ async function handleTutorial(request, env) {
   }
 
   if (method === 'DELETE') {
-    const { id } = body;
-    if (!id) return err('Missing id');
-    const old = await db.prepare('SELECT * FROM tutorials WHERE id = ?').bind(id).first();
-    await db.prepare('DELETE FROM tutorials WHERE id = ?').bind(id).run();
-    await db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'tutorials', id, JSON.stringify(old)).run();
+    const ids = Array.isArray(body.ids) ? body.ids : (body.id ? [body.id] : []);
+    if (!ids.length) return err('Missing ids');
+
+    const stmts = [];
+    for (const uid of ids) {
+      const old = await db.prepare('SELECT * FROM tutorials WHERE id = ?').bind(uid).first();
+      if (old) {
+        stmts.push(db.prepare('DELETE FROM tutorials WHERE id = ?').bind(uid));
+        stmts.push(db.prepare('INSERT INTO changelog (action, target_table, target_id, old_data) VALUES (?, ?, ?, ?)').bind('DELETE', 'tutorials', uid, JSON.stringify(old)));
+      }
+    }
+    if (stmts.length > 0) await db.batch(stmts);
     return json({ success: true });
   }
 
