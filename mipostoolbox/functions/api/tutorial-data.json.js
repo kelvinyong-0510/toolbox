@@ -1,17 +1,28 @@
-export async function onRequest(context) {
+const ADMIN_PIN = "MIPOS888";
+
+function checkAuth(request) {
+    const pin = request.headers.get("X-Admin-Pin");
+    return pin === ADMIN_PIN;
+}
+
+export async function onRequestGet(context) {
     const { env } = context;
-    const { results } = await env.mipostoolbox_db.prepare('SELECT * FROM tutorials').all();
+    const { results } = await env.mipostoolbox_db.prepare('SELECT * FROM tutorials ORDER BY id DESC').all();
     
     const formattedData = results.map(row => {
-        const item = { SKU: row.sku };
+        const item = { id: row.id, SKU: row.sku };
         if (row.playlist_name) item.PlaylistName = row.playlist_name;
         if (row.playlist_link) item.PlaylistLink = row.playlist_link;
         
-        const videoLinks = JSON.parse(row.video_links_json);
-        if (videoLinks && videoLinks.length > 0) item.VideoLinks = videoLinks;
+        try {
+            const videoLinks = JSON.parse(row.video_links_json);
+            if (videoLinks && videoLinks.length > 0) item.VideoLinks = videoLinks;
+        } catch(e){}
         
-        const fileLinks = JSON.parse(row.file_links_json);
-        if (fileLinks && fileLinks.length > 0) item.FileLinks = fileLinks;
+        try{
+            const fileLinks = JSON.parse(row.file_links_json);
+            if (fileLinks && fileLinks.length > 0) item.FileLinks = fileLinks;
+        } catch(e){}
         
         return item;
     });
@@ -20,6 +31,55 @@ export async function onRequest(context) {
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
+        }
+    });
+}
+
+export async function onRequestPost(context) {
+    const { request, env } = context;
+    if (!checkAuth(request)) return new Response("Unauthorized", { status: 401, headers: {'Access-Control-Allow-Origin': '*'} });
+
+    const body = await request.json();
+    
+    const stmt = env.mipostoolbox_db.prepare('INSERT INTO tutorials (sku, playlist_name, playlist_link, video_links_json, file_links_json) VALUES (?, ?, ?, ?, ?)')
+        .bind(body.sku, body.playlist_name || '', body.playlist_link || '', body.video_links_json || '[]', body.file_links_json || '[]');
+    
+    await stmt.run();
+    return new Response(JSON.stringify({ success: true }), { headers: {'Access-Control-Allow-Origin': '*'} });
+}
+
+export async function onRequestPut(context) {
+    const { request, env } = context;
+    if (!checkAuth(request)) return new Response("Unauthorized", { status: 401, headers: {'Access-Control-Allow-Origin': '*'} });
+
+    const body = await request.json();
+    
+    const stmt = env.mipostoolbox_db.prepare('UPDATE tutorials SET sku = ?, playlist_name = ?, playlist_link = ?, video_links_json = ?, file_links_json = ? WHERE id = ?')
+        .bind(body.sku, body.playlist_name || '', body.playlist_link || '', body.video_links_json || '[]', body.file_links_json || '[]', body.id);
+    
+    await stmt.run();
+    return new Response(JSON.stringify({ success: true }), { headers: {'Access-Control-Allow-Origin': '*'} });
+}
+
+export async function onRequestDelete(context) {
+    const { request, env } = context;
+    if (!checkAuth(request)) return new Response("Unauthorized", { status: 401, headers: {'Access-Control-Allow-Origin': '*'} });
+
+    const body = await request.json();
+    
+    const stmt = env.mipostoolbox_db.prepare('DELETE FROM tutorials WHERE id = ?')
+        .bind(body.id);
+    
+    await stmt.run();
+    return new Response(JSON.stringify({ success: true }), { headers: {'Access-Control-Allow-Origin': '*'} });
+}
+
+export async function onRequestOptions() {
+    return new Response(null, {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Pin',
         }
     });
 }

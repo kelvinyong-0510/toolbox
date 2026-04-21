@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - MIPOS ToolBox</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --primary: #58a6ff;
+      --primary-hover: #3182ce;
+      --danger: #f85149;
+    }
+    body {
+      margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    h1 { margin-top: 0; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    
+    .panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+    input, select, textarea {
+      width: 100%; padding: 8px 12px; background: #0d1117; border: 1px solid var(--border); color: var(--text); border-radius: 4px; box-sizing: border-box; font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+    textarea { min-height: 120px; font-family: monospace; font-size: 13px; }
+    
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; color: white; background: var(--primary); }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #d0302b; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+    .btn-secondary:hover { background: #444c56; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+    
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 100; }
+    .modal.active { display: flex; }
+    .modal-content { background: var(--card-bg); width: 100%; max-width: 600px; padding: 20px; border-radius: 8px; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Database Admin</h1>
+      <a href="/" style="color:var(--primary); text-decoration:none;">&larr; Back to ToolBox</a>
+    </div>
+
+    <div class="panel">
+      <div class="form-group" style="max-width:300px">
+        <label>Admin PIN Code (Required to Save/Delete)</label>
+        <input type="password" id="adminPin" placeholder="Enter PIN">
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 20px">
+        <div class="form-group" style="margin:0; width: 300px">
+          <label>Select Database</label>
+          <select id="dbSelect">
+            <option value="led">LED Boards</option>
+            <option value="tutorials">Tutorials</option>
+          </select>
+        </div>
+        <button class="btn" onclick="openCreateModal()">+ Add New Row</button>
+      </div>
+
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>SKU</th>
+            <th style="width: 150px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LED Board Modal -->
+  <div class="modal" id="modalLed">
+    <div class="modal-content">
+      <h2 id="modalLedTitle">Edit LED Board</h2>
+      <input type="hidden" id="ledId">
+      <div class="form-group">
+        <label>SKU</label>
+        <input type="text" id="ledSku">
+      </div>
+      <div class="form-group">
+        <label>Details JSON Array</label>
+        <textarea id="ledDetails"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="btn" onclick="saveLed()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial Modal -->
+  <div class="modal" id="modalTutorial">
+    <div class="modal-content">
+      <h2 id="modalTutorialTitle">Edit Tutorial</h2>
+      <input type="hidden" id="tutId">
+      <div class="form-group">
+        <label>SKU</label>
+        <input type="text" id="tutSku">
+      </div>
+      <div class="form-group">
+        <label>Playlist Name</label>
+        <input type="text" id="tutPlaylistName">
+      </div>
+      <div class="form-group">
+        <label>Playlist Link</label>
+        <input type="text" id="tutPlaylistLink">
+      </div>
+      <div class="form-group">
+        <label>Video Links JSON Array</label>
+        <textarea id="tutVideoLinks"></textarea>
+      </div>
+      <div class="form-group">
+        <label>File Links JSON Array</label>
+        <textarea id="tutFileLinks"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="btn" onclick="saveTutorial()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentData = [];
+    
+    // Fetch Data
+    async function loadData() {
+      const type = document.getElementById('dbSelect').value;
+      const url = type === 'led' ? '/api/led-data.json' : '/api/tutorial-data.json';
+      
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+      
+      try {
+        const res = await fetch(url);
+        currentData = await res.json();
+        renderTable();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="3" style="color:red">Error: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      currentData.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.SKU}</td>
+          <td>
+            <button class="btn" style="padding: 4px 8px; font-size: 12px; margin-right: 5px" onclick="openEditModal(${item.id})">Edit</button>
+            <button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px" onclick="deleteItem(${item.id})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Modal Logic
+    function closeModals() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+
+    function openCreateModal() {
+      const type = document.getElementById('dbSelect').value;
+      if (type === 'led') {
+        document.getElementById('modalLedTitle').innerText = 'Add New LED Board';
+        document.getElementById('ledId').value = '';
+        document.getElementById('ledSku').value = '';
+        document.getElementById('ledDetails').value = '[\n  {\n    "Size": "",\n    "DisplaySize": "",\n    "PosterSize": ""\n  }\n]';
+        document.getElementById('modalLed').classList.add('active');
+      } else {
+        document.getElementById('modalTutorialTitle').innerText = 'Add New Tutorial';
+        document.getElementById('tutId').value = '';
+        document.getElementById('tutSku').value = '';
+        document.getElementById('tutPlaylistName').value = '';
+        document.getElementById('tutPlaylistLink').value = '';
+        document.getElementById('tutVideoLinks').value = '[]';
+        document.getElementById('tutFileLinks').value = '[]';
+        document.getElementById('modalTutorial').classList.add('active');
+      }
+    }
+
+    function openEditModal(id) {
+      const item = currentData.find(d => d.id === id);
+      const type = document.getElementById('dbSelect').value;
+      
+      if (type === 'led') {
+        document.getElementById('modalLedTitle').innerText = 'Edit LED Board';
+        document.getElementById('ledId').value = item.id;
+        document.getElementById('ledSku').value = item.SKU || '';
+        document.getElementById('ledDetails').value = JSON.stringify(item.Details || [], null, 2);
+        document.getElementById('modalLed').classList.add('active');
+      } else {
+        document.getElementById('modalTutorialTitle').innerText = 'Edit Tutorial';
+        document.getElementById('tutId').value = item.id;
+        document.getElementById('tutSku').value = item.SKU || '';
+        document.getElementById('tutPlaylistName').value = item.PlaylistName || '';
+        document.getElementById('tutPlaylistLink').value = item.PlaylistLink || '';
+        document.getElementById('tutVideoLinks').value = JSON.stringify(item.VideoLinks || [], null, 2);
+        document.getElementById('tutFileLinks').value = JSON.stringify(item.FileLinks || [], null, 2);
+        document.getElementById('modalTutorial').classList.add('active');
+      }
+    }
+
+    // Auth Helper
+    function getPin() {
+      const pin = document.getElementById('adminPin').value;
+      if (!pin) alert("Please enter the Admin PIN!");
+      return pin;
+    }
+
+    // Save Handlers
+    async function saveLed() {
+      const pin = getPin(); if(!pin) return;
+      const id = document.getElementById('ledId').value;
+      
+      let detailsJson;
+      try {
+        detailsJson = JSON.stringify(JSON.parse(document.getElementById('ledDetails').value));
+      } catch(e) {
+        return alert("Invalid Details JSON format!");
+      }
+
+      const payload = {
+        sku: document.getElementById('ledSku').value,
+        details_json: detailsJson
+      };
+
+      if (id) payload.id = parseInt(id);
+
+      await sendRequest('/api/led-data.json', id ? 'PUT' : 'POST', payload, pin);
+    }
+
+    async function saveTutorial() {
+      const pin = getPin(); if(!pin) return;
+      const id = document.getElementById('tutId').value;
+      
+      let vJson, fJson;
+      try {
+        vJson = JSON.stringify(JSON.parse(document.getElementById('tutVideoLinks').value));
+        fJson = JSON.stringify(JSON.parse(document.getElementById('tutFileLinks').value));
+      } catch(e) {
+        return alert("Invalid JSON format in Video or File Links!");
+      }
+
+      const payload = {
+        sku: document.getElementById('tutSku').value,
+        playlist_name: document.getElementById('tutPlaylistName').value,
+        playlist_link: document.getElementById('tutPlaylistLink').value,
+        video_links_json: vJson,
+        file_links_json: fJson
+      };
+
+      if (id) payload.id = parseInt(id);
+
+      await sendRequest('/api/tutorial-data.json', id ? 'PUT' : 'POST', payload, pin);
+    }
+
+    // Delete Handler
+    async function deleteItem(id) {
+      if(!confirm("Are you sure you want to permanently delete this row?")) return;
+      const pin = getPin(); if(!pin) return;
+      const type = document.getElementById('dbSelect').value;
+      const url = type === 'led' ? '/api/led-data.json' : '/api/tutorial-data.json';
+      
+      await sendRequest(url, 'DELETE', { id }, pin);
+    }
+
+    // API Comms
+    async function sendRequest(url, method, payload, pin) {
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Pin': pin
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (res.status === 401) {
+          alert('Unauthorized: Incorrect PIN!');
+          return;
+        }
+        
+        if (res.ok) {
+          closeModals();
+          loadData();
+        } else {
+          alert('Error: ' + await res.text());
+        }
+      } catch (e) {
+        alert('Network Error: ' + e.message);
+      }
+    }
+
+    // Init
+    document.getElementById('dbSelect').addEventListener('change', loadData);
+    loadData();
+  </script>
+</body>
+</html>
