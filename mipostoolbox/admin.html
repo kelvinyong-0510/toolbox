@@ -763,7 +763,14 @@
     }
 
     // Init
-    loadData();
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModals();
+        });
+      });
+      loadData();
+    });
   </script>
 </body>
 </html>

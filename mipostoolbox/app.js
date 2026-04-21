@@ -18,7 +18,7 @@ const TOOLS = [
     categoryLabel: 'Android · Network',
     isNew: true,
     description:
-      'Set static IP addresses on thermal printers via USB OTG — no PC required. Supports Xprinter, HPRT, Rongta, Epson & more. Plug-and-play, works fully offline.',
+      'Set static IP addresses on thermal printers via USB OTG — no PC required. Supports POSMAC, Zywell, Rongta. Plug-and-play, works fully offline.',
     features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
     platform: 'android',
     downloadLabel: '⬇ Download APK',
