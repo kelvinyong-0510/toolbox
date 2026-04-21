@@ -1,0 +1,184 @@
+[
+    {
+        "SKU": "HY-T-HA1",
+        "Details": [
+            {
+                "Size": "30.0x40.0cm",
+                "PosterSize": "27.7x37.5cm",
+                "DisplaySize": "26.7x36.5cm"
+            },
+            {
+                "Size": "40.0x50.0cm",
+                "PosterSize": "37.7x47.5cm",
+                "DisplaySize": "36.7x46.5cm"
+            },
+            {
+                "Size": "40.0x60.0cm",
+                "PosterSize": "37.7x57.5cm",
+                "DisplaySize": "36.7x56.6cm"
+            },
+            {
+                "Size": "50.0x60.0cm",
+                "PosterSize": "47.7x57.5cm",
+                "DisplaySize": "46.7x56.5cm"
+            },
+            {
+                "Size": "50.0x70.0cm",
+                "PosterSize": "47.7x67.5cm",
+                "DisplaySize": "46.7x66.5cm"
+            },
+            {
+                "Size": "50.0x80.0cm",
+                "PosterSize": "47.7x77.5cm",
+                "DisplaySize": "46.7x76.5cm"
+            },
+            {
+                "Size": "60.0x80.0cm",
+                "PosterSize": "57.7x77.5cm",
+                "DisplaySize": "56.7x76.5cm"
+            },
+            {
+                "Size": "60.0x90.0cm",
+                "PosterSize": "57.7x87.5cm",
+                "DisplaySize": "56.7x86.5cm"
+            },
+            {
+                "Size": "50.0x100.0cm",
+                "PosterSize": "47.7x97.5cm",
+                "DisplaySize": "46.7x96.5cm"
+            },
+            {
+                "Size": "60.0x100.0cm",
+                "PosterSize": "57.7x97.5cm",
+                "DisplaySize": "56.7x96.5cm"
+            }
+           
+        ]
+    },
+    {
+        "SKU": "YM-WM1",
+        "Details": [
+            {
+                "Size": "40.0x60.0cm",
+                "PosterSize": "37.5x57.2cm",
+                "DisplaySize": "33.5x53.5cm"
+            },
+            {
+                "Size": "50.0x70.0cm",
+                "PosterSize": "47.5x67.2cm",
+                "DisplaySize": "43.7x63.7cm"
+            },
+            {
+                "Size": "60.0x80.0cm",
+                "PosterSize": "57.5x77.2cm",
+                "DisplaySize": "52.6x72.7cm"
+            },
+            {
+                "Size": "60.0x90.0cm",
+                "PosterSize": "57.5x87.2cm",
+                "DisplaySize": "52.6x82.7cm"
+            },
+            {
+                "Size": "60.0x120.0cm",
+                "PosterSize": "57.0x115.5cm",
+                "DisplaySize": "52.6x112.7cm"
+            },
+            {
+                "Size": "70.0x120.0cm",
+                "PosterSize": "67.0x115.5cm",
+                "DisplaySize": "62.6x112.7cm"
+            },
+            {
+                "Size": "80.0x120.0cm",
+                "PosterSize": "77.5x117.5cm",
+                "DisplaySize": "73.6x113.6cm"
+            },
+            {
+                "Size": "50.0x70.0cm",
+                "PosterSize": "47.5x67.2cm",
+                "DisplaySize": "43.7x63.7cm"
+            }
+        ]
+    },
+    {
+        "SKU": "HY-U-W1",
+        "Details": [
+            {
+                "Size": "40.0x60.0cm",
+                "PosterSize": "38.5x59.3cm",
+                "DisplaySize": "37.8x57.8cm"
+            },
+            {
+                "Size": "50.0x70.0cm",
+                "PosterSize": "48.5x69.3cm",
+                "DisplaySize": "47.8x67.8cm"
+            },
+            {
+                "Size": "50.0x80.0cm",
+                "PosterSize": "48.5x79.3cm",
+                "DisplaySize": "47.8x77.8cm"
+            },
+            {
+                "Size": "60.0x80.0cm",
+                "PosterSize": "58.5x79.3cm",
+                "DisplaySize": "57.8x77.8cm"
+            },
+            {
+                "Size": "60.0x90.0cm",
+                "PosterSize": "58.5x89.3cm",
+                "DisplaySize": "57.8x87.8cm"
+            },
+            {
+                "Size": "60.0x120.0cm",
+                "PosterSize": "58.5x119.3cm",
+                "DisplaySize": "57.8x117.8cm"
+            }
+        ]
+    },
+    {
+        "SKU": "HY-U-BOARD-A4",
+        "Details": [
+            {
+                "Size": "22.5x30.4cm",
+                "PosterSize": "21.2x29.7cm",
+                "DisplaySize": "20.6x28.3cm"
+            }
+        ]
+    },
+    {
+        "SKU": "HY-U-BOARD-A3",
+        "Details": [
+            {
+                "Size": "31.5x42.7cm",
+                "PosterSize": "30.0x42.0cm",
+                "DisplaySize": "29.4x40.4cm"
+            }
+        ]
+    },
+    {
+        "SKU": "HY-U-BOARD-A2",
+        "Details": [
+            {
+                "Size": "43.5x60.0cm",
+                "PosterSize": "42.0x59.3cm",
+                "DisplaySize": "41.3x57.8cm"
+            }
+        ]
+    },
+    {
+    "SKU": "SB-W1-BOARD",
+    "Details": [
+        {
+            "Size": "45.7x104.0cm",
+            "PosterSize": "41.7x100.0cm",
+            "DisplaySize": "37.7x96.4cm"
+        },
+        {
+            "Size": "88.0x109.0cm",
+            "PosterSize": "84.0x105.0cm",
+            "DisplaySize": "80.0x101.4cm"
+        }
+    ]
+    }
+]
+
