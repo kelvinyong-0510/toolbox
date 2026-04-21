@@ -23,6 +23,10 @@ const TOOLS = [
     platform: 'android',
     downloadLabel: '⬇ Download APK',
     downloadUrl: '/downloads/mipos-printer-ip-config-v1.17.apk',
+    updates: [
+      { version: 'v1.17', label: 'Latest', downloadUrl: '/downloads/mipos-printer-ip-config-v1.17.apk' },
+      { version: 'v1.15', label: 'Previous', downloadUrl: '/downloads/MIPOS-PrinterIPConfig-v1.15.apk' }
+    ],
     docsUrl:
       'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md',
     docsLabel: 'Docs',
@@ -160,6 +164,42 @@ function renderCard(tool, index) {
     .map((f) => `<span class="tag">${escapeHTML(f)}</span>`)
     .join('');
 
+  let downloadSection = '';
+  if (tool.updates && tool.updates.length > 0) {
+    const options = tool.updates.map(u => `<option value="${escapeHTML(u.downloadUrl)}">${escapeHTML(u.version)} (${escapeHTML(u.label)})</option>`).join('');
+    downloadSection = `
+      <div class="download-group">
+        <select class="version-select" onchange="document.getElementById('btn-download-${escapeHTML(tool.id)}').href = this.value" aria-label="Select version">
+          ${options}
+        </select>
+        <a
+          href="${escapeHTML(tool.updates[0].downloadUrl)}"
+          class="btn-dl"
+          id="btn-download-${escapeHTML(tool.id)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Download or launch ${escapeHTML(tool.name)}"
+        >
+          ${escapeHTML(tool.downloadLabel)}
+        </a>
+      </div>
+    `;
+  } else {
+    downloadSection = `
+      <a
+        href="${escapeHTML(tool.downloadUrl)}"
+        class="btn-dl"
+        id="btn-download-${escapeHTML(tool.id)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Download or launch ${escapeHTML(tool.name)}"
+        style="flex: 1; justify-content: center;"
+      >
+        ${escapeHTML(tool.downloadLabel)}
+      </a>
+    `;
+  }
+
   return `
     <article class="tool-card" id="tool-${escapeHTML(tool.id)}">
       <div class="card-top">
@@ -182,16 +222,7 @@ function renderCard(tool, index) {
       </div>
 
       <div class="card-footer">
-        <a
-          href="${escapeHTML(tool.downloadUrl)}"
-          class="btn-dl"
-          id="btn-download-${escapeHTML(tool.id)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Download or launch ${escapeHTML(tool.name)}"
-        >
-          ${escapeHTML(tool.downloadLabel)}
-        </a>
+        ${downloadSection}
         <a
           href="${escapeHTML(tool.docsUrl)}"
           class="btn-docs"
