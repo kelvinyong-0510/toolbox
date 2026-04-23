@@ -51,16 +51,56 @@ function countByCategory(cat) {
 }
 
 // ─────────────────────────────────────────────
+//  FALLBACK TOOLS (shown if API is unavailable)
+// ─────────────────────────────────────────────
+const FALLBACK_TOOLS = [
+  {
+    id: 1, name: 'Printer IP Config', version: 'v1.22',
+    icon_emoji: '🖨️', icon_bg: 'linear-gradient(135deg,#1B2A4A,#2a3f6e)',
+    category: 'android', category_label: 'Android · Network', is_new: true,
+    description: 'Set static IP addresses on thermal printers via USB OTG — no PC required. Supports POSMAC, Zywell, Rongta. Plug-and-play, works fully offline.',
+    features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
+    download_label: '⬇ Download APK', download_url: '/downloads/mipos-printer-ip-config-v1.22.apk',
+    versions: [
+      { version: 'v1.22', label: 'Latest', downloadUrl: '/downloads/mipos-printer-ip-config-v1.22.apk' },
+      { version: 'v1.21', label: 'Buggy — Avoid', downloadUrl: '/downloads/mipos-printer-ip-config-v1.21.apk' },
+      { version: 'v1.19', label: 'Previous', downloadUrl: '/downloads/mipos-printer-ip-config-v1.19.apk' },
+      { version: 'v1.18', label: 'Stable', downloadUrl: '/downloads/mipos-printer-ip-config-v1.18.apk' },
+    ],
+    docs_url: 'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md', docs_label: 'Docs',
+  },
+  {
+    id: 2, name: 'LED Board Size Finder', version: 'v1.7',
+    icon_emoji: '📏', icon_bg: 'linear-gradient(135deg,#FF6A00,#EE0979)',
+    category: 'utilities', category_label: 'Chrome Extension · Utilities', is_new: true,
+    description: 'Quickly find LED poster and display sizes. Real-time synced directly via Cloudflare API. Copy sizes with one click.',
+    features: ['Real-time Cloud Sync', 'Chrome Extension', 'Size Search'],
+    download_label: '⬇ Download .zip', download_url: '/downloads/mipos-led-finder-v1.7.zip',
+    versions: [], docs_url: '#', docs_label: 'Docs',
+  },
+  {
+    id: 3, name: 'MIPOS Tutorial & Driver Plugin', version: 'v1.1',
+    icon_emoji: '📚', icon_bg: 'linear-gradient(135deg,#43C6AC,#191654)',
+    category: 'utilities', category_label: 'Chrome Extension · Support', is_new: true,
+    description: 'Quickly search and find unlisted tutorial videos, drivers, and files by SKU. Real-time synced directly via Cloudflare API.',
+    features: ['Centralized Knowledge', 'Chrome Extension', 'Real-time Cloud Sync'],
+    download_label: '⬇ Download .zip', download_url: '/downloads/mipos-tutorial-plugin-v1.1.zip',
+    versions: [], docs_url: '#', docs_label: 'Docs',
+  },
+];
+
+// ─────────────────────────────────────────────
 //  FETCH TOOLS FROM API
 // ─────────────────────────────────────────────
 async function loadTools() {
   try {
     const res = await fetch('/api/tools.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    TOOLS = await res.json();
+    const data = await res.json();
+    TOOLS = Array.isArray(data) && data.length > 0 ? data : FALLBACK_TOOLS;
   } catch (e) {
-    console.error('Failed to load tools:', e);
-    TOOLS = [];
+    console.warn('API unavailable, using fallback tools:', e.message);
+    TOOLS = FALLBACK_TOOLS;
   }
   renderCategoryChips();
   renderTools();
