@@ -175,6 +175,68 @@ async function handleChangelogRevert(request, env) {
   return json({ success: true });
 }
 
+// ── TOOLS REGISTRY ───────────────────────────────────────
+async function handleTools(request, env) {
+  const db = env.mipostoolbox_db;
+  const method = request.method;
+
+  if (method === 'OPTIONS') return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE', 'Access-Control-Allow-Headers': 'Content-Type' } });
+
+  if (method === 'GET') {
+    const rows = await db.prepare('SELECT * FROM tools ORDER BY sort_order ASC, id ASC').all();
+    const data = rows.results.map(r => ({
+      id: r.id,
+      name: r.name,
+      version: r.version,
+      icon_emoji: r.icon_emoji,
+      icon_bg: r.icon_bg,
+      category: r.category,
+      category_label: r.category_label,
+      is_new: r.is_new === 1,
+      description: r.description,
+      features: JSON.parse(r.features_json || '[]'),
+      download_label: r.download_label,
+      download_url: r.download_url,
+      versions: JSON.parse(r.versions_json || '[]'),
+      docs_url: r.docs_url,
+      docs_label: r.docs_label,
+      sort_order: r.sort_order,
+    }));
+    return json(data);
+  }
+
+  const body = await request.json().catch(() => null);
+  if (!body) return err('Invalid JSON body');
+
+  if (method === 'POST') {
+    const { name, version, icon_emoji, icon_bg, category, category_label, is_new, description, features_json, download_label, download_url, versions_json, docs_url, docs_label, sort_order } = body;
+    if (!name) return err('Missing name');
+    const result = await db.prepare(
+      'INSERT INTO tools (name,version,icon_emoji,icon_bg,category,category_label,is_new,description,features_json,download_label,download_url,versions_json,docs_url,docs_label,sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+    ).bind(name, version||'', icon_emoji||'🔧', icon_bg||'linear-gradient(135deg,#1B2A4A,#2a3f6e)', category||'utilities', category_label||'', is_new?1:0, description||'', features_json||'[]', download_label||'⬇ Download', download_url||'', versions_json||'[]', docs_url||'#', docs_label||'Docs', sort_order||0).run();
+    return json({ success: true, id: result.meta?.last_row_id });
+  }
+
+  if (method === 'PUT') {
+    const { id, name, version, icon_emoji, icon_bg, category, category_label, is_new, description, features_json, download_label, download_url, versions_json, docs_url, docs_label, sort_order } = body;
+    if (!id) return err('Missing id');
+    await db.prepare(
+      'UPDATE tools SET name=?,version=?,icon_emoji=?,icon_bg=?,category=?,category_label=?,is_new=?,description=?,features_json=?,download_label=?,download_url=?,versions_json=?,docs_url=?,docs_label=?,sort_order=? WHERE id=?'
+    ).bind(name, version||'', icon_emoji||'🔧', icon_bg||'linear-gradient(135deg,#1B2A4A,#2a3f6e)', category||'utilities', category_label||'', is_new?1:0, description||'', features_json||'[]', download_label||'⬇ Download', download_url||'', versions_json||'[]', docs_url||'#', docs_label||'Docs', sort_order||0, id).run();
+    return json({ success: true });
+  }
+
+  if (method === 'DELETE') {
+    const ids = Array.isArray(body.ids) ? body.ids : (body.id ? [body.id] : []);
+    if (!ids.length) return err('Missing ids');
+    const stmts = ids.map(uid => db.prepare('DELETE FROM tools WHERE id = ?').bind(uid));
+    if (stmts.length > 0) await db.batch(stmts);
+    return json({ success: true });
+  }
+
+  return err('Method not allowed', 405);
+}
+
 // ── MAIN ROUTER ───────────────────────────────────────────
 export default {
   async fetch(request, env, ctx) {
@@ -194,10 +256,11 @@ export default {
     }
 
     // API routes
-    if (path === '/api/led-data.json')           return handleLed(request, env);
-    if (path === '/api/tutorial-data.json')       return handleTutorial(request, env);
-    if (path === '/api/changelog.json')           return handleChangelog(request, env);
-    if (path === '/api/changelog-revert.json')    return handleChangelogRevert(request, env);
+    if (path === '/api/tools.json')               return handleTools(request, env);
+    if (path === '/api/led-data.json')             return handleLed(request, env);
+    if (path === '/api/tutorial-data.json')         return handleTutorial(request, env);
+    if (path === '/api/changelog.json')             return handleChangelog(request, env);
+    if (path === '/api/changelog-revert.json')      return handleChangelogRevert(request, env);
 
     // Static assets fallthrough
     return env.ASSETS.fetch(request);

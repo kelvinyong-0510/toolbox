@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS tools (
+  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+  name           TEXT    NOT NULL,
+  version        TEXT,
+  icon_emoji     TEXT    DEFAULT '🔧',
+  icon_bg        TEXT    DEFAULT 'linear-gradient(135deg,#1B2A4A,#2a3f6e)',
+  category       TEXT    DEFAULT 'utilities',
+  category_label TEXT,
+  is_new         INTEGER DEFAULT 1,
+  description    TEXT,
+  features_json  TEXT    DEFAULT '[]',
+  download_label TEXT    DEFAULT '⬇ Download',
+  download_url   TEXT,
+  versions_json  TEXT    DEFAULT '[]',
+  docs_url       TEXT    DEFAULT '#',
+  docs_label     TEXT    DEFAULT 'Docs',
+  sort_order     INTEGER DEFAULT 0,
+  created_at     DATETIME DEFAULT (datetime('now','localtime'))
+);
+
+INSERT OR IGNORE INTO tools (id, name, version, icon_emoji, icon_bg, category, category_label, is_new, description, features_json, download_label, download_url, versions_json, docs_url, docs_label, sort_order) VALUES
+(1, 'Printer IP Config', 'v1.22', '🖨️', 'linear-gradient(135deg,#1B2A4A,#2a3f6e)', 'android', 'Android · Network', 1,
+ 'Set static IP addresses on thermal printers via USB OTG — no PC required. Supports POSMAC, Zywell, Rongta. Plug-and-play, works fully offline.',
+ '["USB OTG","Wi-Fi Mode","Multi-Brand","Offline"]',
+ '⬇ Download APK', '/downloads/mipos-printer-ip-config-v1.22.apk',
+ '[{"version":"v1.22","label":"Latest","downloadUrl":"/downloads/mipos-printer-ip-config-v1.22.apk"},{"version":"v1.21","label":"Buggy — Avoid","downloadUrl":"/downloads/mipos-printer-ip-config-v1.21.apk"},{"version":"v1.19","label":"Previous","downloadUrl":"/downloads/mipos-printer-ip-config-v1.19.apk"},{"version":"v1.18","label":"Stable","downloadUrl":"/downloads/mipos-printer-ip-config-v1.18.apk"}]',
+ 'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md', 'Docs', 1),
+(2, 'LED Board Size Finder', 'v1.7', '📏', 'linear-gradient(135deg,#FF6A00,#EE0979)', 'utilities', 'Chrome Extension · Utilities', 1,
+ 'Quickly find LED poster and display sizes. Real-time synced directly via Cloudflare API. Copy sizes with one click.',
+ '["Real-time Cloud Sync","Chrome Extension","Size Search"]',
+ '⬇ Download .zip', '/downloads/mipos-led-finder-v1.7.zip',
+ '[]', '#', 'Docs', 2),
+(3, 'MIPOS Tutorial & Driver Plugin', 'v1.1', '📚', 'linear-gradient(135deg,#43C6AC,#191654)', 'utilities', 'Chrome Extension · Support', 1,
+ 'Quickly search and find unlisted tutorial videos, drivers, and files by SKU. Real-time synced directly via Cloudflare API.',
+ '["Centralized Knowledge","Chrome Extension","Real-time Cloud Sync"]',
+ '⬇ Download .zip', '/downloads/mipos-tutorial-plugin-v1.1.zip',
+ '[]', '#', 'Docs', 3);

@@ -1,92 +1,7 @@
 /**
  * MIPOS ToolBox — app.js
- * Tool registry, search/filter, card rendering
+ * Fetches tools from Cloudflare API, renders search/filter/cards
  */
-
-// ─────────────────────────────────────────────
-//  TOOLS DATA REGISTRY
-//  Add new tools here — no HTML changes needed
-// ─────────────────────────────────────────────
-const TOOLS = [
-  {
-    id: 'printer-ip-config',
-    name: 'Printer IP Config',
-    version: 'v1.22',
-    icon: '🖨️',
-    iconBg: 'linear-gradient(135deg, #1B2A4A, #2a3f6e)',
-    category: 'android',
-    categoryLabel: 'Android · Network',
-    isNew: true,
-    description:
-      'Set static IP addresses on thermal printers via USB OTG — no PC required. Supports POSMAC, Zywell, Rongta. Plug-and-play, works fully offline.',
-    features: ['USB OTG', 'Wi-Fi Mode', 'Multi-Brand', 'Offline'],
-    platform: 'android',
-    downloadLabel: '⬇ Download APK',
-    downloadUrl: '/downloads/mipos-printer-ip-config-v1.22.apk',
-    updates: [
-      { version: 'v1.22', label: 'Latest', downloadUrl: '/downloads/mipos-printer-ip-config-v1.22.apk' },
-      { version: 'v1.21', label: 'Buggy — Avoid', downloadUrl: '/downloads/mipos-printer-ip-config-v1.21.apk' },
-      { version: 'v1.19', label: 'Previous', downloadUrl: '/downloads/mipos-printer-ip-config-v1.19.apk' },
-      { version: 'v1.18', label: 'Stable', downloadUrl: '/downloads/mipos-printer-ip-config-v1.18.apk' },
-      { version: 'v1.17', label: 'Legacy', downloadUrl: '/downloads/mipos-printer-ip-config-v1.17.apk' },
-      { version: 'v1.15', label: 'Legacy', downloadUrl: '/downloads/MIPOS-PrinterIPConfig-v1.15.apk' }
-    ],
-    docsUrl:
-      'https://github.com/kelvinyong-0510/toolbox/blob/main/README.md',
-    docsLabel: 'Docs',
-  },
-  {
-    id: 'led-board-size-finder',
-    name: 'LED Board Size Finder',
-    version: 'v1.7',
-    icon: '📏',
-    iconBg: 'linear-gradient(135deg, #FF6A00, #EE0979)',
-    category: 'utilities',
-    categoryLabel: 'Chrome Extension · Utilities',
-    isNew: true,
-    description: 'Quickly find LED poster and display sizes. Real-time synced directly via Cloudflare API. Copy sizes with one click.',
-    features: ['Real-time Cloud Sync', 'Chrome Extension', 'Size Search'],
-    platform: 'desktop',
-    downloadLabel: '⬇ Download .zip',
-    downloadUrl: '/downloads/mipos-led-finder-v1.7.zip',
-    docsUrl: '#',
-    docsLabel: 'Docs',
-  },
-  {
-    id: 'mipos-tutorial-plugin',
-    name: 'MIPOS Tutorial & Driver Plugin',
-    version: 'v1.1',
-    icon: '📚',
-    iconBg: 'linear-gradient(135deg, #43C6AC, #191654)',
-    category: 'utilities',
-    categoryLabel: 'Chrome Extension · Support',
-    isNew: true,
-    description: 'Quickly search and find unlisted tutorial videos, drivers, and files by SKU. Real-time synced directly via Cloudflare API.',
-    features: ['Centralized Knowledge', 'Chrome Extension', 'Real-time Cloud Sync'],
-    platform: 'desktop',
-    downloadLabel: '⬇ Download .zip',
-    downloadUrl: '/downloads/mipos-tutorial-plugin-v1.1.zip',
-    docsUrl: '#',
-    docsLabel: 'Docs',
-  },
-  // ── TEMPLATE — duplicate & fill to add more tools ──
-  // {
-  //   id: 'tool-id',
-  //   name: 'Tool Name',
-  //   version: 'v1.0',
-  //   icon: '🔧',
-  //   iconBg: 'linear-gradient(135deg, #1B2A4A, #2a3f6e)',
-  //   category: 'utilities',   // android | network | utilities | web
-  //   categoryLabel: 'Utilities',
-  //   isNew: false,
-  //   description: 'Short description.',
-  //   features: ['Feature 1', 'Feature 2'],
-  //   downloadLabel: '→ Launch Tool',
-  //   downloadUrl: 'https://your-tool-url.com',
-  //   docsUrl: '#',
-  //   docsLabel: 'Docs',
-  // },
-];
 
 // ─────────────────────────────────────────────
 //  CATEGORY FILTER CONFIG
@@ -102,6 +17,7 @@ const CATEGORIES = [
 // ─────────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────────
+let TOOLS          = [];
 let activeCategory = 'all';
 let searchQuery    = '';
 let searchTimer    = null;
@@ -110,22 +26,21 @@ let searchTimer    = null;
 //  HELPERS
 // ─────────────────────────────────────────────
 function escapeHTML(str) {
-  return str.replace(/[&<>"']/g, (c) =>
+  return String(str || '').replace(/[&<>"']/g, (c) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
   );
 }
 
 function getFilteredTools() {
   return TOOLS.filter((t) => {
-    const matchCat =
-      activeCategory === 'all' || t.category === activeCategory;
+    const matchCat = activeCategory === 'all' || t.category === activeCategory;
     const q = searchQuery.toLowerCase();
     const matchSearch =
       !q ||
-      t.name.toLowerCase().includes(q) ||
-      t.description.toLowerCase().includes(q) ||
-      t.features.some((f) => f.toLowerCase().includes(q)) ||
-      t.categoryLabel.toLowerCase().includes(q);
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.description || '').toLowerCase().includes(q) ||
+      (t.features || []).some((f) => f.toLowerCase().includes(q)) ||
+      (t.category_label || '').toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
 }
@@ -133,6 +48,23 @@ function getFilteredTools() {
 function countByCategory(cat) {
   if (cat === 'all') return TOOLS.length;
   return TOOLS.filter((t) => t.category === cat).length;
+}
+
+// ─────────────────────────────────────────────
+//  FETCH TOOLS FROM API
+// ─────────────────────────────────────────────
+async function loadTools() {
+  try {
+    const res = await fetch('/api/tools.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    TOOLS = await res.json();
+  } catch (e) {
+    console.error('Failed to load tools:', e);
+    TOOLS = [];
+  }
+  renderCategoryChips();
+  renderTools();
+  updateHeroStats();
 }
 
 // ─────────────────────────────────────────────
@@ -144,7 +76,7 @@ function renderCategoryChips() {
 
   container.innerHTML = CATEGORIES.map((cat) => {
     const count = countByCategory(cat.id);
-    if (count === 0 && cat.id !== 'all') return ''; // hide empty cats
+    if (count === 0 && cat.id !== 'all') return '';
     return `
       <button
         class="chip ${activeCategory === cat.id ? 'active' : ''}"
@@ -158,7 +90,6 @@ function renderCategoryChips() {
     `;
   }).join('');
 
-  // Attach click handlers
   container.querySelectorAll('.chip').forEach((btn) => {
     btn.addEventListener('click', () => {
       activeCategory = btn.dataset.cat;
@@ -176,7 +107,6 @@ function renderTools() {
 
   const filtered = getFilteredTools();
 
-  // Update count label
   if (count) {
     count.textContent = `${filtered.length} tool${filtered.length !== 1 ? 's' : ''}`;
   }
@@ -188,88 +118,63 @@ function renderTools() {
   }
   if (empty) empty.classList.remove('visible');
 
-  grid.innerHTML = filtered
-    .map((tool, i) => renderCard(tool, i))
-    .join('');
+  grid.innerHTML = filtered.map((tool, i) => renderCard(tool, i)).join('');
 }
 
 function renderCard(tool, index) {
-  const newBadge = tool.isNew
-    ? `<span class="badge-new">New</span>`
-    : '';
-
-  const features = tool.features
+  const newBadge = tool.is_new ? `<span class="badge-new">New</span>` : '';
+  const features = (tool.features || [])
     .map((f) => `<span class="tag">${escapeHTML(f)}</span>`)
     .join('');
 
   let downloadSection = '';
-  if (tool.updates && tool.updates.length > 0) {
-    const options = tool.updates.map(u => `<option value="${escapeHTML(u.downloadUrl)}">${escapeHTML(u.version)} (${escapeHTML(u.label)})</option>`).join('');
+  if (tool.versions && tool.versions.length > 0) {
+    const options = tool.versions.map(u =>
+      `<option value="${escapeHTML(u.downloadUrl)}">${escapeHTML(u.version)} (${escapeHTML(u.label)})</option>`
+    ).join('');
     downloadSection = `
       <div class="download-group">
-        <select class="version-select" onchange="document.getElementById('btn-download-${escapeHTML(tool.id)}').href = this.value" aria-label="Select version">
+        <select class="version-select" onchange="document.getElementById('btn-download-${tool.id}').href = this.value" aria-label="Select version">
           ${options}
         </select>
-        <a
-          href="${escapeHTML(tool.updates[0].downloadUrl)}"
-          class="btn-dl"
-          id="btn-download-${escapeHTML(tool.id)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Download or launch ${escapeHTML(tool.name)}"
-        >
-          ${escapeHTML(tool.downloadLabel)}
+        <a href="${escapeHTML(tool.versions[0].downloadUrl)}" class="btn-dl" id="btn-download-${tool.id}" target="_blank" rel="noopener noreferrer">
+          ${escapeHTML(tool.download_label)}
         </a>
       </div>
     `;
   } else {
     downloadSection = `
-      <a
-        href="${escapeHTML(tool.downloadUrl)}"
-        class="btn-dl"
-        id="btn-download-${escapeHTML(tool.id)}"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Download or launch ${escapeHTML(tool.name)}"
-        style="flex: 1; justify-content: center;"
-      >
-        ${escapeHTML(tool.downloadLabel)}
+      <a href="${escapeHTML(tool.download_url || '#')}" class="btn-dl" id="btn-download-${tool.id}" target="_blank" rel="noopener noreferrer" style="flex:1;justify-content:center;">
+        ${escapeHTML(tool.download_label)}
       </a>
     `;
   }
 
   return `
-    <article class="tool-card" id="tool-${escapeHTML(tool.id)}">
+    <article class="tool-card" id="tool-${tool.id}">
       <div class="card-top">
-        <div class="tool-icon" style="background:${tool.iconBg};" aria-hidden="true">
-          ${tool.icon}
+        <div class="tool-icon" style="background:${escapeHTML(tool.icon_bg)};" aria-hidden="true">
+          ${escapeHTML(tool.icon_emoji)}
         </div>
         <div class="tool-meta">
           <div class="tool-name" title="${escapeHTML(tool.name)}">${escapeHTML(tool.name)}</div>
           <div class="tool-badges">
-            <span class="badge-v">${escapeHTML(tool.version)}</span>
-            <span class="badge-cat">${escapeHTML(tool.categoryLabel)}</span>
+            <span class="badge-v">${escapeHTML(tool.version || '')}</span>
+            <span class="badge-cat">${escapeHTML(tool.category_label || '')}</span>
             ${newBadge}
           </div>
         </div>
       </div>
 
       <div class="card-body">
-        <p class="tool-desc">${escapeHTML(tool.description)}</p>
+        <p class="tool-desc">${escapeHTML(tool.description || '')}</p>
         <div class="tool-tags">${features}</div>
       </div>
 
       <div class="card-footer">
         ${downloadSection}
-        <a
-          href="${escapeHTML(tool.docsUrl)}"
-          class="btn-docs"
-          id="btn-docs-${escapeHTML(tool.id)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="View docs for ${escapeHTML(tool.name)}"
-        >
-          📄 ${escapeHTML(tool.docsLabel)}
+        <a href="${escapeHTML(tool.docs_url || '#')}" class="btn-docs" id="btn-docs-${tool.id}" target="_blank" rel="noopener noreferrer">
+          📄 ${escapeHTML(tool.docs_label || 'Docs')}
         </a>
       </div>
     </article>
@@ -282,22 +187,16 @@ function renderCard(tool, index) {
 function initNavbar() {
   const navbar = document.getElementById('navbar');
   if (!navbar) return;
-  const onScroll = () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 40);
-  };
+  const onScroll = () => { navbar.classList.toggle('scrolled', window.scrollY > 40); };
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // run immediately
+  onScroll();
 
-  // Mobile hamburger
   const hamburger = document.getElementById('hamburger');
   const navLinks  = document.getElementById('navLinks');
   if (hamburger && navLinks) {
     hamburger.addEventListener('click', () => {
       navLinks.classList.toggle('open');
-      hamburger.setAttribute(
-        'aria-expanded',
-        navLinks.classList.contains('open')
-      );
+      hamburger.setAttribute('aria-expanded', navLinks.classList.contains('open'));
     });
   }
 }
@@ -318,7 +217,7 @@ function initSearch() {
 }
 
 // ─────────────────────────────────────────────
-//  HERO STATS (dynamic counts)
+//  HERO STATS
 // ─────────────────────────────────────────────
 function updateHeroStats() {
   const totalEl = document.getElementById('statTotal');
@@ -331,7 +230,5 @@ function updateHeroStats() {
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initSearch();
-  updateHeroStats();
-  renderCategoryChips();
-  renderTools();
+  loadTools();
 });
