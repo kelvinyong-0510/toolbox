@@ -2,8 +2,8 @@ name = "toolbox"
 compatibility_date = "2024-01-01"
 main = "_worker.js"
 
-# Static assets directory - no binding so worker gets ALL requests first
-assets = { directory = ".", not_found_handling = "none" }
+# Static assets directory
+assets = { directory = "." }
 
 # D1 Database Binding
 [[d1_databases]]
