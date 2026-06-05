@@ -55,6 +55,18 @@ function countByCategory(cat) {
 // ─────────────────────────────────────────────
 const FALLBACK_TOOLS = [
   {
+    id: 4, name: 'Self Check-In Kiosk', version: 'v1.0',
+    icon_emoji: '🪧', icon_bg: 'linear-gradient(135deg,#0a1628,#ff6500)',
+    category: 'android', category_label: 'Android · Kiosk', is_new: true,
+    description: 'Self check-in kiosk for the Sunmi K2. Customers find their booking or walk in — it marks attendance and gives a queue number. Runs checkin.mipos.me in a locked full-screen WebView (EN/MY/中文).',
+    features: ['Sunmi K2', 'Lock-task Kiosk', 'Booking + Walk-in', 'EN/MY/中文'],
+    download_label: '⬇ Download APK', download_url: '/downloads/mipos-checkin-v1.0.apk',
+    versions: [
+      { version: 'v1.0', label: 'Latest', downloadUrl: '/downloads/mipos-checkin-v1.0.apk' },
+    ],
+    docs_url: '#', docs_label: 'Docs',
+  },
+  {
     id: 1, name: 'Printer IP Config', version: 'v1.22',
     icon_emoji: '🖨️', icon_bg: 'linear-gradient(135deg,#1B2A4A,#2a3f6e)',
     category: 'android', category_label: 'Android · Network', is_new: true,
@@ -191,7 +203,7 @@ function renderCard(tool, index) {
   }
 
   return `
-    <article class="tool-card" id="tool-${tool.id}">
+    <article class="tool-card" id="tool-${tool.id}" onclick="expandToolDetails(${tool.id})" style="cursor: pointer;">
       <div class="card-top">
         <div class="tool-icon" style="background:${escapeHTML(tool.icon_bg)};" aria-hidden="true">
           ${escapeHTML(tool.icon_emoji)}
@@ -211,14 +223,92 @@ function renderCard(tool, index) {
         <div class="tool-tags">${features}</div>
       </div>
 
-      <div class="card-footer">
+      <div class="card-footer" onclick="event.stopPropagation()">
         ${downloadSection}
-        <a href="${escapeHTML(tool.docs_url || '#')}" class="btn-docs" id="btn-docs-${tool.id}" target="_blank" rel="noopener noreferrer">
-          📄 ${escapeHTML(tool.docs_label || 'Docs')}
-        </a>
       </div>
     </article>
   `;
+}
+
+// ─────────────────────────────────────────────
+//  EXPANDED DETAILS LOGIC
+// ─────────────────────────────────────────────
+function expandToolDetails(id) {
+  const tool = TOOLS.find(t => t.id === id);
+  const container = document.getElementById('toolExpandedArea');
+  if (!tool || !container) return;
+
+  const newBadge = tool.is_new ? `<span class="badge-new">New</span>` : '';
+  const features = (tool.features || [])
+    .map((f) => `<span class="tag">${escapeHTML(f)}</span>`)
+    .join('');
+
+  let downloadSection = '';
+  if (tool.versions && tool.versions.length > 0) {
+    const options = tool.versions.map(u =>
+      `<option value="${escapeHTML(u.downloadUrl)}">${escapeHTML(u.version)} (${escapeHTML(u.label)})</option>`
+    ).join('');
+    downloadSection = `
+      <select class="version-select" onchange="document.getElementById('expanded-btn-download').href = this.value" aria-label="Select version">
+        ${options}
+      </select>
+      <a href="${escapeHTML(tool.versions[0].downloadUrl)}" class="btn-dl" id="expanded-btn-download" target="_blank" rel="noopener noreferrer">
+        ${escapeHTML(tool.download_label)}
+      </a>
+    `;
+  } else {
+    downloadSection = `
+      <a href="${escapeHTML(tool.download_url || '#')}" class="btn-dl" id="expanded-btn-download" target="_blank" rel="noopener noreferrer">
+        ${escapeHTML(tool.download_label)}
+      </a>
+    `;
+  }
+
+  const contentHtml = `
+    <button class="tool-exp-close" onclick="closeToolDetails(event)" aria-label="Close details">✕</button>
+    <div class="tool-exp-layout">
+      <div class="tool-exp-left">
+        <div class="tool-exp-icon" style="background:${escapeHTML(tool.icon_bg)};">
+          ${escapeHTML(tool.icon_emoji)}
+        </div>
+        <div class="modal-title-group" style="margin-bottom:20px;">
+          <h2>${escapeHTML(tool.name)}</h2>
+          <div class="modal-badges">
+            <span class="badge-v">${escapeHTML(tool.version || '')}</span>
+            <span class="badge-cat">${escapeHTML(tool.category_label || '')}</span>
+            ${newBadge}
+          </div>
+        </div>
+        <div class="modal-footer" style="width:100%; margin-top: auto;">
+          ${downloadSection}
+        </div>
+      </div>
+      <div class="tool-exp-right">
+        <h3 style="margin-top:0; color:#1B2A4A; font-size:1.2rem;">Overview</h3>
+        <p class="modal-desc" style="margin-bottom:24px;">${escapeHTML(tool.description || '')}</p>
+        
+        <h4 style="margin:0 0 10px 0; color:#1B2A4A; font-size:1rem;">Features</h4>
+        <div class="modal-tags">${features}</div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = contentHtml;
+  container.classList.add('active');
+
+  // Smooth scroll to expanded area
+  const yOffset = -80; // account for sticky header
+  const y = container.getBoundingClientRect().top + window.pageYOffset + yOffset;
+  window.scrollTo({top: y, behavior: 'smooth'});
+}
+
+function closeToolDetails(event) {
+  if (event) event.stopPropagation();
+  const container = document.getElementById('toolExpandedArea');
+  if (container) {
+    container.classList.remove('active');
+    setTimeout(() => container.innerHTML = '', 400); // clear after transition
+  }
 }
 
 // ─────────────────────────────────────────────
