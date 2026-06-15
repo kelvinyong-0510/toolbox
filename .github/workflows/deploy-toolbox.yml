@@ -1,0 +1,44 @@
+name: Deploy Toolbox Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mipostoolbox/**'
+      - '!mipostoolbox/downloads/**'
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Safety check — ensure not_found_handling is present
+      - name: Validate wrangler.toml
+        run: |
+          if ! grep -q 'not_found_handling' mipostoolbox/wrangler.toml; then
+            echo "❌ FATAL: not_found_handling is missing from wrangler.toml!"
+            echo "This will break all API routes. Aborting deployment."
+            exit 1
+          fi
+          echo "✅ wrangler.toml validation passed"
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: mipostoolbox
+
+      # Smoke test — verify the API still works after deploy
+      - name: Smoke test API
+        run: |
+          sleep 5
+          TOOL_COUNT=$(curl -sf https://toolbox.miporean.workers.dev/api/tools.json | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          echo "Tools returned: $TOOL_COUNT"
+          if [ "$TOOL_COUNT" -lt 1 ]; then
+            echo "❌ SMOKE TEST FAILED: API returned 0 tools!"
+            exit 1
+          fi
+          echo "✅ Smoke test passed — $TOOL_COUNT tools available"
