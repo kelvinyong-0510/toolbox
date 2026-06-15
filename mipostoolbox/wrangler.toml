@@ -1,3 +1,4 @@
+# ⚠️ CRITICAL: Do not remove not_found_handling = "none" — it routes /api/* to the worker
 name = "toolbox"
 compatibility_date = "2024-01-01"
 main = "_worker.js"
