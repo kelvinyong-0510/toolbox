@@ -2,8 +2,10 @@ name = "toolbox"
 compatibility_date = "2024-01-01"
 main = "_worker.js"
 
-# Static assets directory
-assets = { directory = ".", not_found_handling = "none" }
+[assets]
+directory = "."
+binding = "ASSETS"
+not_found_handling = "none"
 
 # D1 Database Binding
 [[d1_databases]]

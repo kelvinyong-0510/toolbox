@@ -224,6 +224,14 @@ async function handleTools(request, env) {
     }
 
     if (method === 'PUT') {
+      if (body.sort_updates && Array.isArray(body.sort_updates)) {
+        const stmts = body.sort_updates.map(u => 
+          db.prepare('UPDATE tools SET sort_order=? WHERE id=?').bind(u.sort_order, u.id)
+        );
+        if (stmts.length > 0) await db.batch(stmts);
+        return json({ success: true });
+      }
+
       const { id, name, version, icon_emoji, icon_bg, category, category_label, is_new, description, features_json, download_label, download_url, versions_json, docs_url, docs_label, sort_order } = body;
       if (!id) return err('Missing id');
       await db.prepare(
